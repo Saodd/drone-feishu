@@ -17,66 +17,27 @@ var (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "slack plugin"
-	app.Usage = "slack plugin"
+	app.Name = "feishu plugin"
+	app.Usage = "feishu plugin"
 	app.Action = run
 	app.Version = fmt.Sprintf("%s+%s", version, build)
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "webhook",
-			Usage:  "slack webhook url",
-			EnvVar: "SLACK_WEBHOOK,PLUGIN_WEBHOOK",
+			Usage:  "feishu webhook url",
+			EnvVar: "FEISHU_WEBHOOK,PLUGIN_WEBHOOK",
 		},
 		cli.StringFlag{
-			Name:   "channel",
-			Usage:  "slack channel",
-			EnvVar: "PLUGIN_CHANNEL",
+			Name:   "secret",
+			Usage:  "feishu secret",
+			EnvVar: "PLUGIN_SECRET",
 		},
 		cli.StringFlag{
-			Name:   "recipient",
-			Usage:  "slack recipient",
-			EnvVar: "PLUGIN_RECIPIENT",
+			Name:   "message",
+			Usage:  "messages need to be sent to feishu",
+			EnvVar: "",
 		},
-		cli.StringFlag{
-			Name:   "username",
-			Usage:  "slack username",
-			EnvVar: "PLUGIN_USERNAME",
-		},
-		cli.StringFlag{
-			Name:   "template",
-			Usage:  "slack template",
-			EnvVar: "PLUGIN_TEMPLATE",
-		},
-		cli.StringFlag{
-			Name:   "fallback",
-			Usage:  "slack fallback",
-			EnvVar: "PLUGIN_FALLBACK",
-		},
-		cli.BoolFlag{
-			Name:   "link-names",
-			Usage:  "slack link names",
-			EnvVar: "PLUGIN_LINK_NAMES",
-		},
-		cli.StringFlag{
-			Name:   "image",
-			Usage:  "slack image url",
-			EnvVar: "PLUGIN_IMAGE_URL",
-		},
-		cli.StringFlag{
-			Name:   "color",
-			Usage:  "slack color",
-			EnvVar: "PLUGIN_COLOR",
-		},
-		cli.StringFlag{
-			Name:   "icon.url",
-			Usage:  "slack icon url",
-			EnvVar: "PLUGIN_ICON_URL",
-		},
-		cli.StringFlag{
-			Name:   "icon.emoji",
-			Usage:  "slack emoji url",
-			EnvVar: "PLUGIN_ICON_EMOJI",
-		},
+
 		cli.StringFlag{
 			Name:   "repo.owner",
 			Usage:  "repository owner",
@@ -230,17 +191,9 @@ func run(c *cli.Context) error {
 			Started: c.Int64("job.started"),
 		},
 		Config: Config{
-			Webhook:   c.String("webhook"),
-			Channel:   c.String("channel"),
-			Recipient: c.String("recipient"),
-			Username:  c.String("username"),
-			Template:  c.String("template"),
-			Fallback:  c.String("fallback"),
-			ImageURL:  c.String("image"),
-			IconURL:   c.String("icon.url"),
-			IconEmoji: c.String("icon.emoji"),
-			Color:     c.String("color"),
-			LinkNames: c.Bool("link-names"),
+			Webhook: c.String("webhook"),
+			Secret:  c.String("secret"),
+			Message: c.String("message"),
 		},
 	}
 	if plugin.Build.Commit == "" {

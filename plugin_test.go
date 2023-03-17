@@ -1,35 +1,32 @@
 package main
 
 import (
-	"io"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"gotest.tools/assert"
 )
 
-func TestExec(t *testing.T) {
-	plugin := Plugin{
-		Repo:   getTestRepo(),
-		Build:  getTestBuild(),
-		Job:    getTestJob(),
-		Config: getTestConfig(),
-	}
-
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		out, _ := io.ReadAll(r.Body)
-		got := string(out)
-		want := `{"attachments":[{"color":"good","fallback":"Message Template Fallback:\nInitial commit\nmaster\nsuccess","text":"Message Template:\nInitial commit\n\nMessage body\nInitial commit\nMessage body","mrkdwn_in":["text","fallback"]}]}`
-		assert.Equal(t, got, want)
-	}
-
-	server := httptest.NewServer(http.HandlerFunc(handler))
-	defer server.Close()
-
-	plugin.Config.Webhook = server.URL
-	_ = plugin.Exec()
-}
+//func TestExec(t *testing.T) {
+//	plugin := Plugin{
+//		Repo:   getTestRepo(),
+//		Build:  getTestBuild(),
+//		Job:    getTestJob(),
+//		Config: getTestConfig(),
+//	}
+//
+//	handler := func(w http.ResponseWriter, r *http.Request) {
+//		out, _ := io.ReadAll(r.Body)
+//		got := string(out)
+//		want := `{"attachments":[{"color":"good","fallback":"Message Template Fallback:\nInitial commit\nmaster\nsuccess","text":"Message Template:\nInitial commit\n\nMessage body\nInitial commit\nMessage body","mrkdwn_in":["text","fallback"]}]}`
+//		assert.Equal(t, got, want)
+//	}
+//
+//	server := httptest.NewServer(http.HandlerFunc(handler))
+//	defer server.Close()
+//
+//	plugin.Config.Webhook = server.URL
+//	_ = plugin.Exec()
+//}
 
 func TestNewCommitMessage(t *testing.T) {
 	testCases := map[string]struct {
@@ -91,41 +88,41 @@ func TestDefaultFallbackMessage(t *testing.T) {
 	assert.Equal(t, expectedMessage, msg)
 }
 
-func TestTemplateMessage(t *testing.T) {
-	plugin := getTestPlugin()
+//func TestTemplateMessage(t *testing.T) {
+//	plugin := getTestPlugin()
+//
+//	msg, err := templateMessage(plugin.Config.Template, plugin)
+//	assert.NilError(t, err, "should create message by template without error")
+//	expectedMessage := `Message Template:
+//Initial commit
+//
+//Message body
+//Initial commit
+//Message body`
+//
+//	assert.Equal(t, expectedMessage, msg)
+//}
+//
+//func TestTemplateFallbackMessage(t *testing.T) {
+//	plugin := getTestPlugin()
+//
+//	msg, err := templateMessage(plugin.Config.Fallback, plugin)
+//	assert.NilError(t, err, "should create message by template without error")
+//	expectedMessage := `Message Template Fallback:
+//Initial commit
+//master
+//success`
+//
+//	assert.Equal(t, expectedMessage, msg)
+//}
 
-	msg, err := templateMessage(plugin.Config.Template, plugin)
-	assert.NilError(t, err, "should create message by template without error")
-	expectedMessage := `Message Template:
-Initial commit
-
-Message body
-Initial commit
-Message body`
-
-	assert.Equal(t, expectedMessage, msg)
-}
-
-func TestTemplateFallbackMessage(t *testing.T) {
-	plugin := getTestPlugin()
-
-	msg, err := templateMessage(plugin.Config.Fallback, plugin)
-	assert.NilError(t, err, "should create message by template without error")
-	expectedMessage := `Message Template Fallback:
-Initial commit
-master
-success`
-
-	assert.Equal(t, expectedMessage, msg)
-}
-
-func getTestPlugin() Plugin {
-	return Plugin{
-		Repo:   getTestRepo(),
-		Build:  getTestBuild(),
-		Config: getTestConfig(),
-	}
-}
+//func getTestPlugin() Plugin {
+//	return Plugin{
+//		Repo:   getTestRepo(),
+//		Build:  getTestBuild(),
+//		Config: getTestConfig(),
+//	}
+//}
 
 func getTestRepo() Repo {
 	return Repo{
@@ -166,19 +163,19 @@ func getTestJob() Job {
 	}
 }
 
-func getTestConfig() Config {
-	t := `Message Template:
-{{build.message}}
-{{build.message.title}}
-{{build.message.body}}`
-
-	tf := `Message Template Fallback:
-{{build.message.title}}
-{{build.branch}}
-{{build.status}}`
-
-	return Config{
-		Template: t,
-		Fallback: tf,
-	}
-}
+//func getTestConfig() Config {
+//	t := `Message Template:
+//{{build.message}}
+//{{build.message.title}}
+//{{build.message.body}}`
+//
+//	tf := `Message Template Fallback:
+//{{build.message.title}}
+//{{build.branch}}
+//{{build.status}}`
+//
+//	return Config{
+//		Template: t,
+//		Fallback: tf,
+//	}
+//}
