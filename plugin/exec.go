@@ -2,11 +2,10 @@ package plugin
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/saodd/alog"
 	feishuRobotGo "github.com/saodd/go-feishu-robot"
-	"log"
 )
 
 func (p *Plugin) Exec(c context.Context) error {
@@ -25,7 +24,11 @@ func (p *Plugin) Exec(c context.Context) error {
 		Secret: p.Config.Secret,
 		Hook:   p.Config.Webhook,
 	}
-	return robot.SendPost(c, content)
+	if err := robot.SendPost(c, content); err != nil {
+		alog.CE(c, err, alog.V{"content": content})
+		return err
+	}
+	return nil
 }
 
 func (p *Plugin) CheckArgs() error {
@@ -42,9 +45,13 @@ func DefaultBuildFeishuContent(p *Plugin) *feishuRobotGo.RobotContent {
 	content := &feishuRobotGo.RobotContent{
 		Post: feishuRobotGo.RobotPostContent{
 			ZhCn: feishuRobotGo.RobotPostContentGroup{
-				Title: fmt.Sprintf("<%s>%s/%s: %s", p.BuildInfo.Status, p.RepoInfo.Name, p.BuildInfo.Branch, p.StageInfo.Name),
+				Title: fmt.Sprintf("%s/%s: %s (%s)", p.RepoInfo.Name, p.BuildInfo.Branch, p.StageInfo.Name, p.BuildInfo.Status),
 				Content: [][]feishuRobotGo.RobotPostContentGroupContent{
 					{
+						{
+							Tag:       "emotion",
+							EmojiType: generateEmojiType(p),
+						},
 						{
 							Tag:  "a",
 							Text: "构建日志",
@@ -63,8 +70,16 @@ func DefaultBuildFeishuContent(p *Plugin) *feishuRobotGo.RobotContent {
 			},
 		})
 	}
-	log.Println(content)
-	j, _ := json.Marshal(content)
-	log.Println(string(j))
 	return content
+}
+
+func generateEmojiType(p *Plugin) string {
+	switch p.BuildInfo.Status {
+	case "success":
+		return "CheckMark"
+	case "failure":
+		return "CrossMark"
+	default:
+		return "WHAT"
+	}
 }

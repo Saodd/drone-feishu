@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/joho/godotenv v1.4.0
 	github.com/saodd/alog v0.6.1
-	github.com/saodd/go-feishu-robot v0.1.0
+	github.com/saodd/go-feishu-robot v0.2.0
 	github.com/urfave/cli v1.22.10
 )
 
