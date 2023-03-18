@@ -46,22 +46,31 @@ func DefaultBuildFeishuContent(p *Plugin) *feishuRobotGo.RobotContent {
 		Post: feishuRobotGo.RobotPostContent{
 			ZhCn: feishuRobotGo.RobotPostContentGroup{
 				Title: fmt.Sprintf("%s/%s: %s (%s)", p.RepoInfo.Name, p.BuildInfo.Branch, p.StageInfo.Name, p.BuildInfo.Status),
-				Content: [][]feishuRobotGo.RobotPostContentGroupContent{
-					{
-						{
-							Tag:       "emotion",
-							EmojiType: generateEmojiType(p),
-						},
-						{
-							Tag:  "a",
-							Text: "构建日志",
-							Href: p.BuildInfo.Link,
-						},
-					},
-				},
 			},
 		},
 	}
+
+	if p.BuildInfo.Status == "success" {
+		content.Post.ZhCn.Content = append(content.Post.ZhCn.Content, []feishuRobotGo.RobotPostContentGroupContent{
+			{
+				Tag:  "text",
+				Text: "构建成功",
+			},
+		})
+	} else {
+		content.Post.ZhCn.Content = append(content.Post.ZhCn.Content, []feishuRobotGo.RobotPostContentGroupContent{
+			{
+				Tag:  "text",
+				Text: "构建异常！！请查看：",
+			},
+			{
+				Tag:  "a",
+				Text: "日志",
+				Href: p.BuildInfo.Link,
+			},
+		})
+	}
+
 	if p.Config.Message != "" {
 		content.Post.ZhCn.Content = append(content.Post.ZhCn.Content, []feishuRobotGo.RobotPostContentGroupContent{
 			{
@@ -73,6 +82,7 @@ func DefaultBuildFeishuContent(p *Plugin) *feishuRobotGo.RobotContent {
 	return content
 }
 
+// 不再默认使用表情标签，因为接口响应：[10002]not support emotion tag.
 func generateEmojiType(p *Plugin) string {
 	switch p.BuildInfo.Status {
 	case "success":
